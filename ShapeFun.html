@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Statistical Graphics in SAS (SGPLOT) and R (ggplot2)" />
+  <title>Shape Fun!</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+   href="custom.css" />
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Shape Fun!</h1>
+  <p class="author">
+Programming Graphics in SAS (SGPLOT) and R (ggplot2)
+  </p>
+  <p class="date">CSJP</p>
+  <A href="index.htm"><IMG SRC="home.gif" border="0"></A>   
+</div>
+</div>
+<div class="section slide level2" id="bar-chart">
+<h1>Bar Chart …</h1>
+<h3 id="sas---sgplot-0">SAS - SGPLOT</h3>
+<pre><code>PROC SGPLOT DATA=chocolate;
+    VBAR FavoriteFlavor / GROUP = AgeGroup;
+    LABEL FavoriteFlavor = &#39;Flavor of Chocolate&#39;;
+    TITLE &#39;Favorite Chocolate Flavors by Age Group&#39;;
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG1.png" />
+</div>
+<h3 id="r---ggplot2">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(chocolate, <span class="kw">aes</span>(<span class="dt">x =</span> FavoriteFlavor, <span class="dt">fill =</span> AgeGroup)) +<span class="st"> </span><span class="kw">geom_bar</span>(<span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Pastel1&quot;</span>) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;Flavor of Chocolate&quot;</span>) +<span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency&quot;</span>) +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Favorite Chocolate Flavors by Age Group&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rbar.png" />
+</div>
+</div>
+<div class="section slide level2" id="histogram">
+<h1>Histogram/Density …</h1>
+<h3 id="sas---sgplot-1">SAS - SGPLOT</h3>
+<pre><code>PROC SGPLOT DATA=bikerace;
+  HISTOGRAM NumberLaps / SHOWBINS;
+  DENSITY NumberLaps;
+  DENSITY NumberLaps / TYPE=KERNEL;
+  TITLE &#39;Bicycle Criterium Results&#39;;
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG3.png" />
+</div>
+<h3 id="r---ggplot2-1">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(bikerace, <span class="kw">aes</span>(<span class="dt">x =</span> NumberLaps)) +<span class="st"> </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), 
+    <span class="dt">breaks =</span> breaks, <span class="dt">right =</span> <span class="ot">TRUE</span>, <span class="dt">fill =</span> <span class="st">&quot;cornsilk&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;grey60&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_density</span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="kw">aes</span>(<span class="dt">fill =</span> <span class="st">&quot;#FF6666&quot;</span>), <span class="dt">colour =</span> <span class="kw">element_blank</span>()) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dnorm, <span class="dt">args =</span> <span class="kw">list</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(bikerace$NumberLaps), 
+        <span class="dt">sd =</span> <span class="kw">sd</span>(bikerace$NumberLaps))) +<span class="st"> </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dnorm, <span class="dt">args =</span> <span class="kw">list</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(bikerace$NumberLaps), 
+    <span class="dt">sd =</span> <span class="kw">sd</span>(bikerace$NumberLaps)), <span class="dt">geom =</span> <span class="st">&quot;area&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="kw">aes</span>(<span class="dt">fill =</span> <span class="st">&quot;#6666FF&quot;</span>)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_fill_discrete</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Normal&quot;</span>, <span class="st">&quot;Kernel&quot;</span>)) +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">fill =</span> <span class="st">&quot;Curves&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>)) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">xlim</span>(<span class="dv">15</span>, <span class="dv">65</span>) +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Bicycle Criterium Results&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rhist.png" />
+</div>
+</div>
+<div class="section slide level2" id="box-plot">
+<h1>Box Plot …</h1>
+<h3 id="sas---sgplot-2">SAS - SGPLOT</h3>
+<pre><code>PROC SGPLOT DATA=bikerace;
+  VBOX NumberLaps / CATEGRORY = Division;
+  TITLE &#39;Bicycle Criterium Results&#39;;
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG5.png" />
+</div>
+<h3 id="r---ggplot2-2">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(bikerace, <span class="kw">aes</span>(<span class="dt">x =</span> Division, <span class="dt">y =</span> NumberLaps, <span class="dt">fill =</span> Division)) +<span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="dt">width =</span> <span class="fl">0.5</span>, 
+    <span class="dt">outlier.size =</span> <span class="dv">3</span>, <span class="dt">outlier.shape =</span> <span class="dv">21</span>) +<span class="st"> </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> <span class="st">&quot;mean&quot;</span>, <span class="dt">geom =</span> <span class="st">&quot;point&quot;</span>, 
+    <span class="dt">shape =</span> <span class="dv">23</span>, <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>) +<span class="st"> </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Pastel2&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="dt">legend.justification =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>)) +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">fill =</span> <span class="st">&quot;Division</span><span class="ch">\n</span><span class="st">AgeGroup&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>) +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Bicycle Criterium Results&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rbox.png" />
+</div>
+</div>
+<div class="section slide level2" id="scatter-plot">
+<h1>Scatter Plot …</h1>
+<h3 id="sas---sgplot-3">SAS - SGPLOT</h3>
+<pre><code>PROC SGPLOT DATA=onionrings;
+  SCATTER X = Action Y = BSales;
+  SCATTER X = Action Y = Csales;
+  XAXIS LABEL =&#39;Hits + Runs&#39; VALUES = (0 TO 40 BY 10);
+  YAXIS LABEL =&#39;Number Sold&#39;;
+  LABEL BSales = &#39;Sales in Bleachers&#39;;
+  LABEL CSales = &#39;Sales at Stands&#39;;
+  TITLE &#39;Onion Ring Sales vs. Game Action&#39;;
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG7.png" />
+</div>
+<h3 id="r---ggplot2-3">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(mydata, <span class="kw">aes</span>(<span class="dt">x =</span> Action, <span class="dt">y =</span> Count, <span class="dt">colour =</span> Sales, <span class="dt">shape =</span> Sales)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) +<span class="st"> </span><span class="kw">scale_x_discrete</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, 
+    <span class="dv">40</span>, <span class="dt">by =</span> <span class="dv">10</span>)) +<span class="st"> </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="dv">45</span>) +<span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Hits + Runs&quot;</span>) +<span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Number Sold&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_shape_discrete</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Sales in Stands&quot;</span>, <span class="st">&quot;Sales at Bleachers&quot;</span>)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_colour_discrete</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Sales in Stands&quot;</span>, <span class="st">&quot;Sales at Bleachers&quot;</span>)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">shape =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>), <span class="dt">colour =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Onion Ring Sales vs. Game Action&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rscat.png" />
+</div>
+</div>
+<div class="section slide level2" id="seriesline-plot">
+<h1>Series/Line Plot …</h1>
+<h3 id="sas---sgplot-4">SAS - SGPLOT</h3>
+<pre><code>PROC SGPLOT DATA=temperatures;
+  SERIES X = Month Y = IntFalls;
+  SERIES X = Month Y = Raleigh;
+  SERIES X = Month Y = Yuma;
+  REFLINE 32 75 / TRANSPARENCY = 0.5 LABEL = (&#39;32 degrees&#39; &#39;75 degrees&#39;);
+  XAXIS TYPE=DISCRETE;
+  YAXIS LABEL = &#39;Average High Temperature (F)&#39;;
+  TITLE &#39;Temperatures by Month for International Falls,  &#39;
+                &#39;Raleigh, and Yuma&#39;;
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG9.png" />
+</div>
+<h3 id="r---ggplot2-4">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(mydata, <span class="kw">aes</span>(<span class="dt">x =</span> Month, <span class="dt">y =</span> Temp, <span class="dt">linetype =</span> City, <span class="dt">colour =</span> City)) +<span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">size =</span> <span class="dv">1</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">scale_colour_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Set1&quot;</span>) +<span class="st"> </span><span class="kw">scale_x_discrete</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, 
+    <span class="dv">12</span>, <span class="dt">by =</span> <span class="dv">1</span>)) +<span class="st"> </span><span class="kw">scale_y_discrete</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="dt">by =</span> <span class="dv">20</span>)) +<span class="st"> </span><span class="kw">expand_limits</span>(<span class="dt">y =</span> <span class="dv">110</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="kw">aes</span>(<span class="dt">yintercept =</span> <span class="kw">c</span>(<span class="dv">32</span>, <span class="dv">75</span>)), <span class="dt">alpha =</span> <span class="fl">0.3</span>) +<span class="st"> </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, 
+    <span class="dt">x =</span> <span class="dv">12</span>, <span class="dt">y =</span> <span class="fl">34.5</span>, <span class="dt">label =</span> <span class="st">&quot;32 degrees&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>) +<span class="st"> </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, 
+    <span class="dt">x =</span> <span class="dv">12</span>, <span class="dt">y =</span> <span class="fl">77.5</span>, <span class="dt">label =</span> <span class="st">&quot;75 degrees&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Temperatures by Month for International Falls, Raleigh, and Yuma&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rseri.png" />
+</div>
+</div>
+<div class="section slide level2" id="curve-fitting-plot">
+<h1>Curve-Fitting Plot …</h1>
+<h3 id="sas---sgplot-5">SAS - SGPLOT</h3>
+<pre><code>PROC SGPLOT DATA=Olympic1500;
+  REG X=Year Y=Men / CLM NOLEGCLM NOMARKERS;
+  LOESS X=Year Y=Men / CLM NOLEGCLM;
+  YAXIS LABEL=&#39;Time in Seconds&#39;;
+  TITLE &quot;Olympic Times For Men&#39;s 1500 Meter Run&quot;;
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG11.png" />
+</div>
+<h3 id="r---ggplot2-5">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(Olympics1500, <span class="kw">aes</span>(<span class="dt">x =</span> Year, <span class="dt">y =</span> Men)) +<span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">colour =</span> <span class="kw">muted</span>(<span class="st">&quot;green&quot;</span>), 
+    <span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">fill =</span> <span class="st">&quot;yellow&quot;</span>, <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span><span class="kw">stat_smooth</span>(<span class="dt">method =</span> lm, <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw">muted</span>(<span class="st">&quot;yellow&quot;</span>)), 
+    <span class="dt">fill =</span> <span class="st">&quot;grey60&quot;</span>, <span class="dt">size =</span> <span class="dv">1</span>) +<span class="st"> </span><span class="kw">stat_smooth</span>(<span class="dt">method =</span> loess, <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw">muted</span>(<span class="st">&quot;blue&quot;</span>)), 
+    <span class="dt">fill =</span> <span class="st">&quot;grey40&quot;</span>, <span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>) +<span class="st"> </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">1900</span>, 
+    <span class="dv">2000</span>, <span class="dt">by =</span> <span class="dv">25</span>)) +<span class="st"> </span><span class="kw">scale_colour_discrete</span>(<span class="dt">name =</span> <span class="st">&quot;Fit&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Loess&quot;</span>, 
+    <span class="st">&quot;Regression&quot;</span>)) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) +<span class="st"> </span><span class="kw">guides</span>(<span class="dt">colour =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Olympic Times for Men&#39;s 1500 Meter Run&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rcfit.png" />
+</div>
+</div>
+<div class="section slide level2" id="facets">
+<h1>Panels …</h1>
+<h3 id="sas---sgplot-6">SAS - SGPLOT</h3>
+<pre><code>PROC FREQ DATA=bus;
+  TABLES BusType*OnTimeOrLate / PLOTS=FREQPLOT(TWOWAY=GROUPHORIZONTAL);
+RUN;</code></pre>
+<div class="figure">
+<img src="./figure/Shape_SG13.png" />
+</div>
+<h3 id="r---ggplot2-6">R - ggplot2</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(bus, <span class="kw">aes</span>(<span class="dt">x =</span> OnTimeorLate, <span class="dt">fill =</span> OnTimeorLate)) +<span class="st"> </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Pastel1&quot;</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_bar</span>() +<span class="st"> </span><span class="kw">facet_grid</span>(. ~<span class="st"> </span>BusType) +<span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency&quot;</span>) +<span class="st"> </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Distribution of BusType by OnTimeorLate&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/ShapeFun-rface.png" />
+</div>
+</div>
+</body>
+</html>

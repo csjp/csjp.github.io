@@ -1,0 +1,599 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="with R, Markdown and HTML/XHTML" />
+  <title>REPRO Fun!</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">REPRO Fun!</h1>
+  <p class="author">
+with R, Markdown and HTML/XHTML
+  </p>
+  <p class="date">CSJP</p>
+  <A href="index.htm"><IMG SRC="home.gif" border="0"></A>    
+</div>
+<div class="section slide level2" id="play-games-first">
+<h1>Play games first …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set a seed for reproducible results</span>
+<span class="kw">set.seed</span>(<span class="dv">1234</span>)
+<span class="co"># toss a coin</span>
+<span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;H&quot;</span>, <span class="st">&quot;T&quot;</span>), <span class="dv">10</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>##  [1] &quot;H&quot; &quot;T&quot; &quot;T&quot; &quot;T&quot; &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;T&quot; &quot;T&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># roll a die</span>
+<span class="kw">sample</span>(<span class="dv">1</span>:<span class="dv">6</span>, <span class="dv">10</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>##  [1] 5 4 2 6 2 6 2 2 2 2</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># roll 2 dice</span>
+dice = <span class="kw">as.vector</span>(<span class="kw">outer</span>(<span class="dv">1</span>:<span class="dv">6</span>, <span class="dv">1</span>:<span class="dv">6</span>, paste))
+<span class="kw">sample</span>(dice, <span class="dv">5</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>## [1] &quot;6 2&quot; &quot;5 2&quot; &quot;6 1&quot; &quot;2 1&quot; &quot;2 2&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># pick 6 of 54 - lottery</span>
+<span class="kw">sample</span>(<span class="dv">1</span>:<span class="dv">54</span>, <span class="dv">6</span>)</code></pre>
+<pre><code>## [1] 44 28 48 43  3 23</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># play a card - a pair of jacks</span>
+cards = <span class="kw">paste</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">2</span>:<span class="dv">10</span>, <span class="st">&quot;J&quot;</span>, <span class="st">&quot;Q&quot;</span>, <span class="st">&quot;K&quot;</span>), <span class="dv">4</span>), <span class="kw">c</span>(<span class="st">&quot;H&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;S&quot;</span>, 
+    <span class="st">&quot;C&quot;</span>))
+<span class="kw">sample</span>(cards, <span class="dv">5</span>)</code></pre>
+<pre><code>## [1] &quot;A D&quot; &quot;3 C&quot; &quot;K D&quot; &quot;9 H&quot; &quot;J H&quot;</code></pre>
+</div>
+<div class="section slide level2" id="back-to-normal-stuffs">
+<h1>Back to normal stuffs …</h1>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="co"># significant levels</span>
+alphas &lt;- <span class="kw">c</span>(<span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.32</span>, <span class="fl">0.62</span>)
+<span class="co"># new function to plot significant levels with std. normal dist.</span>
+<span class="kw">siglplot</span>(alphas)</code></pre>
+<div class="figure">
+<img src="figure/slides-siglplot.png" alt="Standard Normal Distribution" /><p class="caption">Standard Normal Distribution</p>
+</div>
+</div>
+<div class="section slide level2" id="feel-more-confident">
+<h1>Feel more confident …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2-sample - paired &amp; !var.equal</span>
+x1 &lt;- <span class="kw">c</span>(<span class="fl">36.7</span>, <span class="fl">35.8</span>, <span class="fl">31.9</span>, <span class="fl">29.3</span>, <span class="fl">28.4</span>, <span class="fl">25.7</span>, <span class="fl">24.2</span>, <span class="fl">22.6</span>, <span class="fl">21.9</span>, <span class="fl">20.3</span>)
+x2 &lt;- <span class="kw">c</span>(<span class="fl">36.2</span>, <span class="fl">35.7</span>, <span class="fl">32.3</span>, <span class="fl">29.6</span>, <span class="fl">28.1</span>, <span class="fl">25.8</span>, <span class="fl">23.9</span>, <span class="dv">22</span>, <span class="fl">21.5</span>, <span class="dv">20</span>)
+<span class="co"># new function created by my own confidence :)</span>
+out &lt;- <span class="kw">ci.t</span>(x1, x2, <span class="dt">paired =</span> <span class="ot">TRUE</span>, <span class="dt">conf.level =</span> <span class="kw">c</span>(<span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="fl">0.99</span>))
+<span class="co"># using xtable to automatically generate a table as below:</span></code></pre>
+<!-- html table generated in R 2.14.2 by xtable 1.7-0 package -->
+<!-- Mon May 21 11:26:43 2012 -->
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> Confidence Intervals </CAPTION>
+<TR> <TH>  </TH> <TH> 
+CI.lower
+</TH> <TH> 
+CI.upper
+</TH>  </TR>
+  <TR> <TD align="right"> 
+90%
+</TD> <TD> 
+-0.02525
+</TD> <TD>  
+0.36525
+</TD> </TR>
+  <TR> <TD align="right"> 
+95%
+</TD> <TD> 
+-0.07094
+</TD> <TD>  
+0.41094
+</TD> </TR>
+  <TR> <TD align="right"> 
+99%
+</TD> <TD> 
+-0.17614
+</TD> <TD>  
+0.51614
+</TD> </TR>
+   
+<A NAME=tab:table-ci></A>
+</TABLE>
+
+
+
+
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 95% confidence intervals includes population mean assume that population</span>
+<span class="co"># variance is known and its distribution is normal</span>
+smpsize &lt;- <span class="dv">1000</span>
+obs &lt;- <span class="dv">5</span>
+
+pmean &lt;- <span class="dv">100</span>
+psd &lt;- <span class="dv">5</span>
+conf.level &lt;- <span class="fl">0.95</span>
+
+<span class="kw">set.seed</span>(<span class="dv">1234</span>)
+d &lt;- <span class="kw">matrix</span>(<span class="ot">NA</span>, obs, smpsize)
+d &lt;- <span class="kw">replicate</span>(smpsize, <span class="kw">rnorm</span>(obs, pmean, psd))
+smean &lt;- <span class="kw">colMeans</span>(d)
+z.value &lt;- <span class="kw">qnorm</span>(<span class="dv">1</span> - (<span class="dv">1</span> - conf.level)/<span class="dv">2</span>)
+cil &lt;- smean - z.value * psd/<span class="kw">sqrt</span>(obs)
+ciu &lt;- smean + z.value * psd/<span class="kw">sqrt</span>(obs)
+<span class="kw">sum</span>(cil &lt; pmean &amp; ciu &gt; pmean)/smpsize</code></pre>
+<pre><code>## [1] 0.951</code></pre>
+</div>
+<div class="section slide level2" id="test-hypos">
+<h1>Test hypos …</h1>
+<h3 id="a-picture-is-worth-a-thousand-words">A picture is worth a thousand words!</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1-sample - 1-side</span>
+<span class="kw">set.seed</span>(<span class="dv">1234</span>)
+x &lt;- <span class="kw">rnorm</span>(<span class="dv">130</span>, <span class="dt">mean =</span> <span class="dv">2</span>, <span class="dt">sd =</span> <span class="dv">3</span>)
+tres &lt;- <span class="kw">t.test</span>(x, <span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">conf.level =</span> <span class="fl">0.9</span>, <span class="dt">alternative =</span> <span class="st">&quot;greater&quot;</span>)
+<span class="co"># new plot function created to plot hypo. tests</span>
+<span class="kw">plot</span>(tres)</code></pre>
+<div class="figure">
+<img src="figure/slides-hypot1.png" alt="Hypo. Test Plot (I)" /><p class="caption">Hypo. Test Plot (I)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2-sample - 2- side, !paired &amp; var.equal</span>
+myData &lt;- <span class="kw">read.csv</span>(<span class="st">&quot;BeerWater.csv&quot;</span>)
+tres &lt;- <span class="kw">with</span>(myData, <span class="kw">t.test</span>(B, W, <span class="dt">var.equal =</span> <span class="ot">FALSE</span>))
+<span class="kw">plot</span>(tres)</code></pre>
+<div class="figure">
+<img src="figure/slides-hypot2.png" alt="Hypo. Test Plot (II)" /><p class="caption">Hypo. Test Plot (II)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2-sample - 2-side, paired &amp; !var.equal</span>
+x1 &lt;- <span class="kw">c</span>(<span class="fl">36.7</span>, <span class="fl">35.8</span>, <span class="fl">31.9</span>, <span class="fl">29.3</span>, <span class="fl">28.4</span>, <span class="fl">25.7</span>, <span class="fl">24.2</span>, <span class="fl">22.6</span>, <span class="fl">21.9</span>, <span class="fl">20.3</span>)
+x2 &lt;- <span class="kw">c</span>(<span class="fl">36.2</span>, <span class="fl">35.7</span>, <span class="fl">32.3</span>, <span class="fl">29.6</span>, <span class="fl">28.1</span>, <span class="fl">25.8</span>, <span class="fl">23.9</span>, <span class="dv">22</span>, <span class="fl">21.5</span>, <span class="dv">20</span>)
+tres &lt;- <span class="kw">t.test</span>(x1, x2, <span class="dt">paired =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(tres)</code></pre>
+<div class="figure">
+<img src="figure/slides-hypot3.png" alt="Hypo. Test Plot (III)" /><p class="caption">Hypo. Test Plot (III)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2-sample - 1-side, paired &amp; !var.equal</span>
+x1 &lt;- <span class="kw">c</span>(<span class="dv">89</span>, <span class="dv">87</span>, <span class="dv">70</span>, <span class="dv">83</span>, <span class="dv">67</span>, <span class="dv">71</span>, <span class="dv">92</span>, <span class="dv">81</span>, <span class="dv">97</span>, <span class="dv">78</span>, <span class="dv">94</span>, <span class="dv">79</span>)
+x2 &lt;- <span class="kw">c</span>(<span class="dv">94</span>, <span class="dv">91</span>, <span class="dv">68</span>, <span class="dv">88</span>, <span class="dv">75</span>, <span class="dv">66</span>, <span class="dv">94</span>, <span class="dv">88</span>, <span class="dv">96</span>, <span class="dv">88</span>, <span class="dv">95</span>, <span class="dv">87</span>)
+tres &lt;- <span class="kw">t.test</span>(x1, x2, <span class="dt">alternative =</span> <span class="st">&quot;less&quot;</span>, <span class="dt">paired =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(tres)</code></pre>
+<div class="figure">
+<img src="figure/slides-hypot4.png" alt="Hypo. Test Plot (IV)" /><p class="caption">Hypo. Test Plot (IV)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># prop.test</span>
+pres &lt;- <span class="kw">prop.test</span>(<span class="dt">x =</span> <span class="dv">18</span>, <span class="dt">n =</span> <span class="dv">30</span>, <span class="dt">p =</span> <span class="fl">0.55</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, 
+    <span class="dt">conf.level =</span> <span class="fl">0.95</span>, <span class="dt">correct =</span> <span class="ot">FALSE</span>)
+<span class="kw">plot</span>(pres)</code></pre>
+<div class="figure">
+<img src="figure/slides-hypot5.png" alt="Hypo. Test Plot (V)" /><p class="caption">Hypo. Test Plot (V)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># var.test</span>
+myData &lt;- <span class="kw">read.csv</span>(<span class="st">&quot;TeachingMethods.csv&quot;</span>)
+vres &lt;- <span class="kw">with</span>(myData, <span class="kw">var.test</span>(E, L, <span class="dt">alternative =</span> <span class="st">&quot;greater&quot;</span>))
+<span class="kw">plot</span>(vres)</code></pre>
+<div class="figure">
+<img src="figure/slides-hypot6.png" alt="Hypo. Test Plot (VI)" /><p class="caption">Hypo. Test Plot (VI)</p>
+</div>
+</div>
+<div class="section slide level2" id="against-power">
+<h1>Against power …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1-sample test on a population mean</span>
+<span class="kw">power.t.test</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">d =</span> (<span class="dv">70</span> - <span class="dv">60</span>), <span class="dt">sd =</span> <span class="kw">sqrt</span>(<span class="dv">400</span>), <span class="dt">sig.level =</span> <span class="fl">0.05</span>, 
+    <span class="dt">type =</span> <span class="st">&quot;one.sample&quot;</span>, <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>)</code></pre>
+<pre><code>## 
+##      One-sample t test power calculation 
+## 
+##               n = 10
+##           delta = 10
+##              sd = 20
+##       sig.level = 0.05
+##           power = 0.2928
+##     alternative = two.sided
+## </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2-sample test on paired population mean differences</span>
+<span class="kw">power.t.test</span>(<span class="dt">n =</span> <span class="dv">5</span>, <span class="dt">d =</span> <span class="dv">5</span>, <span class="dt">sd =</span> <span class="dv">10</span> * <span class="kw">sqrt</span>(<span class="dv">2</span> * (<span class="dv">1</span> - <span class="fl">0.8</span>)), <span class="dt">sig.level =</span> <span class="fl">0.05</span>, 
+    <span class="dt">type =</span> <span class="st">&quot;paired&quot;</span>, <span class="dt">alternative =</span> <span class="st">&quot;one.sided&quot;</span>)</code></pre>
+<pre><code>## 
+##      Paired t test power calculation 
+## 
+##               n = 5
+##           delta = 5
+##              sd = 6.325
+##       sig.level = 0.05
+##           power = 0.4296
+##     alternative = one.sided
+## 
+##  NOTE: n is number of *pairs*, sd is std.dev. of *differences* within pairs 
+## </code></pre>
+</div>
+<div class="section slide level2" id="categorical-ones">
+<h1>Categorical ones …</h1>
+<pre class="sourceCode r"><code class="sourceCode r">JG &lt;- <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">450</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">40</span>, <span class="dv">330</span>, <span class="dv">40</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">20</span>), <span class="dt">byrow =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">nrow =</span> <span class="dv">3</span>)
+<span class="kw">dimnames</span>(JG) &lt;- <span class="kw">list</span>(<span class="dt">J1 =</span> <span class="kw">c</span>(<span class="st">&quot;T&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;N&quot;</span>), <span class="dt">J2 =</span> <span class="kw">c</span>(<span class="st">&quot;T&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;N&quot;</span>))
+<span class="kw">print</span>(JG)</code></pre>
+<pre><code>##    J2
+## J1    T   F  N
+##   T 450  20 40
+##   F  40 330 40
+##   N  20  40 20</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(gmodels)
+<span class="kw">CrossTable</span>(JG, <span class="dt">expected =</span> <span class="ot">TRUE</span>, <span class="dt">prop.r =</span> <span class="ot">FALSE</span>, <span class="dt">prop.c =</span> <span class="ot">FALSE</span>, <span class="dt">prop.t =</span> <span class="ot">FALSE</span>, 
+    <span class="dt">prop.chisq =</span> <span class="ot">FALSE</span>, <span class="dt">format =</span> <span class="st">&quot;SPSS&quot;</span>)</code></pre>
+<pre><code>## 
+##    Cell Contents
+## |-------------------------|
+## |                   Count |
+## |         Expected Values |
+## |-------------------------|
+## 
+## Total Observations in Table:  1000 
+## 
+##              | J2 
+##           J1 |        T  |        F  |        N  | Row Total | 
+## -------------|-----------|-----------|-----------|-----------|
+##            T |      450  |       20  |       40  |      510  | 
+##              |  260.100  |  198.900  |   51.000  |           | 
+## -------------|-----------|-----------|-----------|-----------|
+##            F |       40  |      330  |       40  |      410  | 
+##              |  209.100  |  159.900  |   41.000  |           | 
+## -------------|-----------|-----------|-----------|-----------|
+##            N |       20  |       40  |       20  |       80  | 
+##              |   40.800  |   31.200  |    8.000  |           | 
+## -------------|-----------|-----------|-----------|-----------|
+## Column Total |      510  |      390  |      100  |     1000  | 
+## -------------|-----------|-----------|-----------|-----------|
+## 
+##  
+## Statistics for All Table Factors
+## 
+## 
+## Pearson&#39;s Chi-squared test 
+## ------------------------------------------------------------
+## Chi^2 =  650.7     d.f. =  4     p =  1.609e-139 
+## 
+## 
+##  
+##        Minimum expected frequency: 8 
+## </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(vcd)
+<span class="kw">agreementplot</span>(<span class="kw">t</span>(JG))</code></pre>
+<div class="figure">
+<img src="figure/slides-catg.png" alt="Plot of Agreement" /><p class="caption">Plot of Agreement</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(<span class="kw">assocstats</span>(<span class="kw">as.table</span>(JG)))</code></pre>
+<pre><code>## 
+## Number of cases in table: 1000 
+## Number of factors: 2 
+## Test for independence of all factors:
+##  Chisq = 651, df = 4, p-value = 2e-139
+##                     X^2 df P(&gt; X^2)
+## Likelihood Ratio 753.96  4        0
+## Pearson          650.74  4        0
+## 
+## Phi-Coefficient   : 0.807 
+## Contingency Coeff.: 0.628 
+## Cramer&#39;s V        : 0.57 
+## </code></pre>
+</div>
+<div class="section slide level2" id="more-classes-in-life">
+<h1>More classes in life …</h1>
+<pre class="sourceCode r"><code class="sourceCode r">data &lt;- <span class="kw">read.csv</span>(<span class="st">&quot;Titanic.csv&quot;</span>)
+<span class="co"># who survived in the Titanic tragedy</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">qplot</span>(Class, <span class="dt">data =</span> data, <span class="dt">geom =</span> <span class="st">&quot;bar&quot;</span>, <span class="dt">fill =</span> Survived, <span class="dt">postion =</span> <span class="st">&quot;stack&quot;</span>, 
+    <span class="dt">facets =</span> ~Sex) + <span class="kw">coord_flip</span>()</code></pre>
+<div class="figure">
+<img src="figure/slides-survive.png" alt="Plot of Facets" /><p class="caption">Plot of Facets</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># survival rate</span>
+fun &lt;- function(x) <span class="kw">length</span>(x[x == <span class="st">&quot;Yes&quot;</span>])
+t1 &lt;- <span class="kw">data.frame</span>(<span class="kw">with</span>(data, <span class="kw">aggregate</span>(<span class="dt">x =</span> Survived, <span class="dt">by =</span> <span class="kw">list</span>(Class, 
+    Sex, Age), <span class="dt">FUN =</span> length)))
+t2 &lt;- <span class="kw">data.frame</span>(<span class="kw">with</span>(data, <span class="kw">aggregate</span>(<span class="dt">x =</span> Survived, <span class="dt">by =</span> <span class="kw">list</span>(Class, 
+    Sex, Age), <span class="dt">FUN =</span> fun)))
+t1$y &lt;- t2$x
+t1$survived &lt;- <span class="kw">round</span>(t1$y/t1$x, <span class="dt">digits =</span> <span class="dv">2</span>)
+t1[<span class="kw">order</span>(t1$survived, <span class="dt">decreasing =</span> T), ]</code></pre>
+<pre><code>##    Group.1 Group.2 Group.3   x   y survived
+## 9    First  Female   Child   1   1     1.00
+## 10  Second  Female   Child  13  13     1.00
+## 12   First    Male   Child   5   5     1.00
+## 13  Second    Male   Child  11  11     1.00
+## 2    First  Female   Adult 144 140     0.97
+## 1     Crew  Female   Adult  23  20     0.87
+## 3   Second  Female   Adult  93  80     0.86
+## 4    Third  Female   Adult 165  76     0.46
+## 11   Third  Female   Child  31  14     0.45
+## 6    First    Male   Adult 175  57     0.33
+## 14   Third    Male   Child  48  13     0.27
+## 5     Crew    Male   Adult 862 192     0.22
+## 8    Third    Male   Adult 462  75     0.16
+## 7   Second    Male   Adult 168  14     0.08</code></pre>
+</div>
+<div class="section slide level2" id="and-some-factors">
+<h1>And some factor(s) …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># one-factor ANOVA</span>
+x &lt;- <span class="kw">factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">5</span>), <span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">5</span>), <span class="kw">rep</span>(<span class="st">&quot;P&quot;</span>, <span class="dv">5</span>)), <span class="dt">level =</span> <span class="kw">c</span>(<span class="st">&quot;B&quot;</span>, 
+    <span class="st">&quot;A&quot;</span>, <span class="st">&quot;P&quot;</span>))
+y &lt;- <span class="kw">c</span>(<span class="dv">35</span>, <span class="dv">25</span>, <span class="dv">73</span>, <span class="dv">45</span>, <span class="dv">22</span>, <span class="dv">36</span>, <span class="dv">45</span>, <span class="dv">22</span>, <span class="dv">33</span>, <span class="dv">14</span>, <span class="dv">66</span>, <span class="dv">97</span>, <span class="dv">90</span>, <span class="dv">76</span>, <span class="dv">71</span>)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">qplot</span>(x, y, <span class="dt">geom =</span> <span class="st">&quot;boxplot&quot;</span>, <span class="dt">fill =</span> x)</code></pre>
+<div class="figure">
+<img src="figure/slides-onef.png" alt="Boxplot (I)" /><p class="caption">Boxplot (I)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(<span class="kw">aov</span>(y ~ x))</code></pre>
+<pre><code>##             Df Sum Sq Mean Sq F value  Pr(&gt;F)    
+## x            2   7000    3500    14.2 0.00069 ***
+## Residuals   12   2960     247                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># two-factor ANOVA</span>
+T &lt;- <span class="kw">factor</span>(<span class="kw">rep</span>(<span class="kw">rep</span>(<span class="dv">1</span>:<span class="dv">2</span>, <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">5</span>)), <span class="dv">3</span>))
+<span class="kw">levels</span>(T) &lt;- <span class="kw">c</span>(<span class="st">&quot;D&quot;</span>, <span class="st">&quot;N&quot;</span>)
+P &lt;- <span class="kw">factor</span>(<span class="kw">rep</span>(<span class="dv">1</span>:<span class="dv">3</span>, <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">10</span>)))
+<span class="kw">levels</span>(P) &lt;- <span class="kw">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;P&quot;</span>)
+y &lt;- <span class="kw">c</span>(<span class="dv">35</span>, <span class="dv">25</span>, <span class="dv">73</span>, <span class="dv">45</span>, <span class="dv">22</span>, <span class="dv">31</span>, <span class="dv">55</span>, <span class="dv">36</span>, <span class="dv">49</span>, <span class="dv">44</span>, <span class="dv">36</span>, <span class="dv">45</span>, <span class="dv">22</span>, <span class="dv">33</span>, <span class="dv">14</span>, 
+    <span class="dv">65</span>, <span class="dv">44</span>, <span class="dv">75</span>, <span class="dv">62</span>, <span class="dv">54</span>, <span class="dv">66</span>, <span class="dv">97</span>, <span class="dv">90</span>, <span class="dv">76</span>, <span class="dv">71</span>, <span class="dv">90</span>, <span class="dv">77</span>, <span class="dv">55</span>, <span class="dv">72</span>, <span class="dv">76</span>)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">qplot</span>(P, y, <span class="dt">geom =</span> <span class="st">&quot;boxplot&quot;</span>, <span class="dt">fill =</span> T)</code></pre>
+<div class="figure">
+<img src="figure/slides-twof1.png" alt="Boxplot (II)" /><p class="caption">Boxplot (II)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">qplot</span>(T, y, <span class="dt">geom =</span> <span class="st">&quot;boxplot&quot;</span>, <span class="dt">fill =</span> P)</code></pre>
+<div class="figure">
+<img src="figure/slides-twof2.png" alt="Boxplot(III)" /><p class="caption">Boxplot(III)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(<span class="kw">aov</span>(y ~ T * P))</code></pre>
+<pre><code>##             Df Sum Sq Mean Sq F value  Pr(&gt;F)    
+## T            1    608     608    3.23   0.085 .  
+## P            2   7655    3828   20.35 6.8e-06 ***
+## T:P          2   1755     877    4.67   0.019 *  
+## Residuals   24   4514     188                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 </code></pre>
+</div>
+<div class="section slide level2" id="simple-maybe-regression">
+<h1>Simple (maybe) regression …</h1>
+<pre class="sourceCode r"><code class="sourceCode r">myData &lt;- <span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="dv">31</span>, <span class="dv">25</span>, <span class="dv">29</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">32</span>, <span class="dv">27</span>, <span class="dv">33</span>, <span class="dv">28</span>, <span class="dv">21</span>), 
+    <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">58</span>, <span class="dv">52</span>, <span class="dv">61</span>, <span class="dv">57</span>, <span class="dv">93</span>, <span class="dv">63</span>, <span class="dv">68</span>, <span class="dv">71</span>, <span class="dv">73</span>, <span class="dv">48</span>))
+<span class="co"># linear</span>
+m1 &lt;- <span class="kw">lm</span>(y ~ x, <span class="dt">data =</span> myData)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">qplot</span>(x, y, <span class="dt">data =</span> myData, <span class="dt">geom =</span> <span class="kw">c</span>(<span class="st">&quot;point&quot;</span>, <span class="st">&quot;smooth&quot;</span>), <span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/slides-sreg.png" alt="Plot of Linear Model" /><p class="caption">Plot of Linear Model</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># log</span>
+m2 &lt;- <span class="kw">lm</span>(y ~ <span class="kw">log</span>(x), <span class="dt">data =</span> myData)
+<span class="co"># polynomial</span>
+m3 &lt;- <span class="kw">lm</span>(y ~ <span class="kw">poly</span>(x, <span class="dv">2</span>, <span class="dt">raw =</span> <span class="ot">TRUE</span>), <span class="dt">data =</span> myData)
+<span class="co"># power</span>
+<span class="kw">library</span>(MASS)
+bc &lt;- <span class="kw">boxcox</span>(m1, <span class="dt">plotit =</span> <span class="ot">FALSE</span>)
+lamda &lt;- bc$x[<span class="kw">which.max</span>(bc$y)]
+m4 &lt;- <span class="kw">lm</span>(y ~ <span class="kw">I</span>(x^(<span class="dv">1</span>/lamda)), <span class="dt">data =</span> myData)
+<span class="co"># exponential</span>
+f &lt;- function(x, a, b) {
+    a * <span class="kw">exp</span>(b * x)
+}
+fm &lt;- <span class="kw">nls</span>(y ~ <span class="kw">f</span>(x, a, b), <span class="dt">data =</span> myData, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dt">a =</span> <span class="dv">10</span>, <span class="dt">b =</span> <span class="fl">0.1</span>))
+m5 &lt;- <span class="kw">lm</span>(y ~ <span class="kw">I</span>(<span class="kw">coef</span>(fm)[<span class="dv">1</span>] * <span class="kw">exp</span>(<span class="kw">coef</span>(fm)[<span class="dv">2</span>] * x)) + <span class="dv">0</span>, <span class="dt">data =</span> myData)
+
+<span class="kw">anova</span>(m1, m2, m3, m4, m5)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: y ~ x
+## Model 2: y ~ log(x)
+## Model 3: y ~ poly(x, 2, raw = TRUE)
+## Model 4: y ~ I(x^(1/lamda))
+## Model 5: y ~ I(coef(fm)[1] * exp(coef(fm)[2] * x)) + 0
+##   Res.Df RSS Df Sum of Sq    F Pr(&gt;F)  
+## 1      8 499                           
+## 2      8 582  0       -83              
+## 3      7 395  1       187 3.30  0.112  
+## 4      8 768 -1      -372 6.59  0.037 *
+## 5      9 443 -1       325              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">AIC</span>(m1, m2, m3, m4, m5)</code></pre>
+<pre><code>##    df   AIC
+## m1  3 73.47
+## m2  3 75.01
+## m3  4 73.15
+## m4  3 77.78
+## m5  2 70.28</code></pre>
+</div>
+<div class="section slide level2" id="multiple-regression">
+<h1>Multiple regression …</h1>
+<pre class="sourceCode r"><code class="sourceCode r">myData &lt;- <span class="kw">read.csv</span>(<span class="st">&quot;exData.csv&quot;</span>)
+m1 &lt;- <span class="kw">lm</span>(W ~ purchase + Q + N, <span class="dt">data =</span> myData)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">qplot</span>(<span class="kw">c</span>(Q, N), W, <span class="dt">data =</span> myData, <span class="dt">geom =</span> <span class="kw">c</span>(<span class="st">&quot;point&quot;</span>, <span class="st">&quot;smooth&quot;</span>), <span class="dt">col =</span> purchase, 
+    <span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;Q+N&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/slides-mreg.png" alt="Plot of Linear Model" /><p class="caption">Plot of Linear Model</p>
+</div>
+</div>
+<div class="section slide level2" id="travel-with-time">
+<h1>Travel with time …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&quot;STOCK.RData&quot;</span>)
+<span class="co"># plot prices with volumes</span>
+opar = <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>) + <span class="fl">0.1</span>)
+<span class="kw">barplot</span>(STOCK$Volume, <span class="dt">col =</span> <span class="st">&quot;Gray&quot;</span>, <span class="dt">border =</span> <span class="ot">NA</span>, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">axisnames =</span> <span class="ot">FALSE</span>, 
+    <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">5e+08</span>))
+<span class="kw">axis</span>(<span class="dv">4</span>)
+<span class="kw">mtext</span>(<span class="st">&quot;Volume&quot;</span>, <span class="dt">side =</span> <span class="dv">4</span>, <span class="dt">line =</span> <span class="dv">3</span>)
+<span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(STOCK$Adjusted, <span class="dt">main =</span> <span class="st">&quot;STOCK&quot;</span>, <span class="dt">yaxt =</span> <span class="st">&quot;n&quot;</span>)
+<span class="kw">axis</span>(<span class="dv">2</span>)
+<span class="kw">mtext</span>(<span class="st">&quot;Price&quot;</span>, <span class="dt">side =</span> <span class="dv">2</span>, <span class="dt">line =</span> <span class="dv">3</span>)
+<span class="kw">par</span>(opar)</code></pre>
+<div class="figure">
+<img src="figure/slides-ts1.png" alt="Plot of Time Series" /><p class="caption">Plot of Time Series</p>
+</div>
+</div>
+<div class="section slide level2" id="still-have-time">
+<h1>Still have time …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># AR(3)</span>
+<span class="kw">set.seed</span>(<span class="dv">1234</span>)
+n &lt;- <span class="dv">200</span>
+x = <span class="kw">arima.sim</span>(<span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, -<span class="fl">0.7</span>, <span class="fl">0.5</span>), <span class="dt">order =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">0</span>, 
+    <span class="dv">0</span>)), n)
+op &lt;- <span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
+<span class="kw">acf</span>(x)
+<span class="kw">pacf</span>(x)</code></pre>
+<div class="figure">
+<img src="figure/slides-ts21.png" alt="ACF and PACF Plot (I)" /><p class="caption">ACF and PACF Plot (I)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(op)
+<span class="kw">Box.test</span>(x, <span class="dt">lag =</span> <span class="kw">log</span>(n), <span class="dt">type =</span> <span class="st">&quot;Ljung&quot;</span>)</code></pre>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  x 
+## X-squared = 261, df = 5.298, p-value &lt; 2.2e-16
+## </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">y &lt;- <span class="kw">arima</span>(x, <span class="dt">order =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">0</span>))
+op &lt;- <span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
+<span class="kw">acf</span>(y$resid)
+<span class="kw">pacf</span>(y$resid)</code></pre>
+<div class="figure">
+<img src="figure/slides-ts22.png" alt="ACF and PACF Plot (II)" /><p class="caption">ACF and PACF Plot (II)</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(op)
+<span class="kw">confint</span>(y)</code></pre>
+<pre><code>##              2.5 %  97.5 %
+## ar1        0.27746  0.5101
+## ar2       -0.82847 -0.6851
+## ar3        0.42134  0.6516
+## intercept -0.01366  0.3107</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(forecast)
+y &lt;- <span class="kw">auto.arima</span>(x)
+<span class="kw">confint</span>(y)</code></pre>
+<pre><code>##               2.5 %  97.5 %
+## ar1       -0.271553 -0.1638
+## ar2       -0.989699 -0.8908
+## ma1        0.467648  0.7678
+## ma2        0.358998  0.6902
+## ma3        0.097702  0.3812
+## intercept  0.002771  0.2938</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="kw">forecast</span>(y, <span class="dt">h =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="kw">c</span>(<span class="dv">80</span>, <span class="dv">95</span>)))</code></pre>
+<div class="figure">
+<img src="figure/slides-ts23.png" alt="Time Series Plot with Forecasts" /><p class="caption">Time Series Plot with Forecasts</p>
+</div>
+</div>
+<div class="section slide level2" id="bootstrap-something-final">
+<h1>Bootstrap something final …</h1>
+<pre class="sourceCode r"><code class="sourceCode r">m1 &lt;- <span class="kw">lm</span>(W ~ purchase + Q + N, <span class="dt">data =</span> myData)
+<span class="kw">set.seed</span>(<span class="dv">1234</span>)
+<span class="kw">library</span>(boot)
+results &lt;- <span class="kw">boot</span>(<span class="dt">data =</span> myData, <span class="dt">statistic =</span> bs, <span class="dt">R =</span> <span class="dv">1000</span>, <span class="dt">formula =</span> W ~ 
+    purchase + Q + N)
+<span class="kw">plot</span>(results, <span class="dt">index =</span> <span class="dv">2</span>)</code></pre>
+<div class="figure">
+<img src="figure/slides-boot.png" alt="Density Plot and Q-Q Plot" /><p class="caption">Density Plot and Q-Q Plot</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">confint</span>(m1)</code></pre>
+<pre><code>##                2.5 % 97.5 %
+## (Intercept) -0.61275 2.4117
+## purchaseYes  0.22564 1.6733
+## Q            0.08631 0.3343
+## N            0.42732 0.7539</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boot.ci</span>(results, <span class="dt">type =</span> <span class="st">&quot;bca&quot;</span>, <span class="dt">index =</span> <span class="dv">2</span>)</code></pre>
+<pre><code>## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 1000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = results, type = &quot;bca&quot;, index = 2)
+## 
+## Intervals : 
+## Level       BCa          
+## 95%   ( 0.2749,  1.7697 )  
+## Calculations and Intervals on Original Scale</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boot.ci</span>(results, <span class="dt">type =</span> <span class="st">&quot;bca&quot;</span>, <span class="dt">index =</span> <span class="dv">3</span>)</code></pre>
+<pre><code>## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 1000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = results, type = &quot;bca&quot;, index = 3)
+## 
+## Intervals : 
+## Level       BCa          
+## 95%   ( 0.1050,  0.3179 )  
+## Calculations and Intervals on Original Scale</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boot.ci</span>(results, <span class="dt">type =</span> <span class="st">&quot;bca&quot;</span>, <span class="dt">index =</span> <span class="dv">4</span>)</code></pre>
+<pre><code>## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 1000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = results, type = &quot;bca&quot;, index = 4)
+## 
+## Intervals : 
+## Level       BCa          
+## 95%   ( 0.4037,  0.7934 )  
+## Calculations and Intervals on Original Scale</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(m1)</code></pre>
+<pre><code>## (Intercept) purchaseYes           Q           N 
+##      0.8995      0.9495      0.2103      0.5906 </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(results)</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = myData, statistic = bs, R = 1000, formula = W ~ purchase + 
+##     Q + N)
+## 
+## 
+## Bootstrap Statistics :
+##     original    bias    std. error
+## t1*   0.8995 -0.009424     0.77403
+## t2*   0.9495 -0.013474     0.36631
+## t3*   0.2103 -0.001269     0.05625
+## t4*   0.5906  0.002895     0.09510</code></pre>
+</div>
+<div class="section slide level2" id="my-sessioninfo">
+<h1>My sessionInfo …</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">sessionInfo</span>(), <span class="dt">locale =</span> <span class="ot">FALSE</span>)</code></pre>
+<pre><code>## R version 2.14.2 (2012-02-29)
+## Platform: i386-pc-mingw32/i386 (32-bit)
+## 
+## attached base packages:
+##  [1] tcltk     splines   parallel  grid      stats     graphics  grDevices
+##  [8] utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] car_2.0-12            nnet_7.3-1            survival_2.36-12     
+##  [4] quantmod_0.3-17       TTR_0.21-1            xts_0.8-6            
+##  [7] Defaults_1.1-1        animation_2.0-6       boot_1.3-4           
+## [10] forecast_3.21         RcppArmadillo_0.3.0.3 Rcpp_0.9.10          
+## [13] fracdiff_1.4-1        tseries_0.10-28       zoo_1.7-7            
+## [16] quadprog_1.5-4        ggplot2_0.9.0         vcd_1.2-13           
+## [19] colorspace_1.1-1      MASS_7.3-17           gmodels_2.15.2       
+## [22] xtable_1.7-0          knitr_0.5            
+## 
+## loaded via a namespace (and not attached):
+##  [1] codetools_0.2-8    dichromat_1.2-4    digest_0.5.2      
+##  [4] evaluate_0.4.2     formatR_0.4        gdata_2.8.2       
+##  [7] gtools_2.6.2       highlight_0.3.1    lattice_0.20-6    
+## [10] memoise_0.1        munsell_0.3        parser_0.0-14     
+## [13] plyr_1.7.1         proto_0.3-9.2      RColorBrewer_1.0-5
+## [16] reshape2_1.2.1     scales_0.2.0       stringr_0.6       
+## [19] tools_2.14.2      </code></pre>
+</div>
+</body>
+</html>

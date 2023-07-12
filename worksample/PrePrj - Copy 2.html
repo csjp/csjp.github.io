@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Using R on Nowcastic Forecasts with Google Trends" />
+  <title>Preliminary Project</title>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Preliminary Project</h1>
+  <p class="author">
+Using R on Nowcastic Forecasts with Google Trends
+  </p>
+  <p class="date">CSJP</p>
+</div>
+<div class="section slide level1" id="goal-data">
+<h1>Goal Data</h1>
+<ul>
+<li>‘Motor Vehicle and Part Dealers’ - a report/survey from Census Bureau sent to motor vehicle and parts dealers that asks their current sales</li>
+<li>The preliminary sales data is released 2 weeks after the end of each month</li>
+</ul>
+<div class="figure">
+<img src="goal.png" /><p class="caption"></p>
+</div>
+<ul>
+<li>Nowcastic forecast on May sales with two Google Trends already available on May, 2012</li>
+</ul>
+</div>
+<div class="section slide level1" id="collect-data">
+<h1>Collect Data</h1>
+<ul>
+<li>Target variable ‘sales’ (Survey Index from Jan. 2004 to Apr. 2012)</li>
+<li>Source: <a href="http://www.census.gov/retail/marts/www/timeseries.html">http://www.census.gov/retail/marts/www/timeseries.html</a></li>
+</ul>
+<div class="figure">
+<img src="tvar.png" /><p class="caption"></p>
+</div>
+<ul>
+<li>Predictor ‘tss’ (Query Index - “Trucks + Sedans + SUVs” of Google Trends from Jan. 2004 to May, 2012)</li>
+<li>Source: <a href="http://www.google.com/insights/search/">http://www.google.com/insights/search/</a></li>
+</ul>
+<div class="figure">
+<img src="pvar1.png" /><p class="caption"></p>
+</div>
+<ul>
+<li>Predictor ‘ins’ (Query Index -“Insurance” of Google Trends from Jan. 2004 to May, 2012)</li>
+<li>Source: <a href="http://www.google.com/insights/search/">http://www.google.com/insights/search/</a></li>
+</ul>
+<div class="figure">
+<img src="pvar2.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="analyze-data">
+<h1>Analyze Data</h1>
+<ul>
+<li>My data set (adt) looks like:</li>
+</ul>
+<pre><code>##            sales   tss   ins
+## 2004-01-01 61146 -0.21 -0.07
+## 2004-02-01 65230 -0.28 -0.11
+## 2004-03-01 78662 -0.28  0.10
+## 2004-04-01 73252 -0.31  0.05
+## 2004-05-01 77491 -0.21  0.25
+## 2004-06-01 75355 -0.42  0.16</code></pre>
+<ul>
+<li>Verify if target variable (sales) is time-correlated:</li>
+</ul>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  coredata(adt$sales) 
+## X-squared = 61.45, df = 1, p-value = 4.552e-15
+## </code></pre>
+<ul>
+<li><p>Yes, then plot it:<br /><img src="figure/slides-analyze3.png" /></p></li>
+<li><p>Since it has large variability, log it, then plot it:<br /><img src="figure/slides-analyze4.png" /></p></li>
+<li><p>Diff it and acf/pacf it:<br /><img src="figure/slides-analyze6.png" /></p></li>
+<li><p>There is a seasonal component, so diff it by 12, then acf/pacf it: <img src="figure/slides-analyze7.png" /></p></li>
+<li><p>To sum up - baseline model is a seasonal AR-1 model</p></li>
+</ul>
+</div>
+<div class="section slide level1" id="model-data">
+<h1>Model Data</h1>
+<ul>
+<li>Model 1 - baseline model</li>
+<li>\(log(y_t) = a_1log(y_{t-1}) + a_{12}log(y_{t-12}) + e_t\)</li>
+</ul>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ lagy.1 + lagy.12, data = d[-nrow(d), ])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.21300 -0.03846  0.00314  0.04178  0.21807 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   0.7259     0.7525    0.96     0.34    
+## lagy.1        0.6374     0.0702    9.07  3.8e-14 ***
+## lagy.12       0.2973     0.0692    4.29  4.6e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+## 
+## Residual standard error: 0.0798 on 85 degrees of freedom
+##   (12 observations deleted due to missingness)
+## Multiple R-squared: 0.699,   Adjusted R-squared: 0.692 
+## F-statistic: 98.7 on 2 and 85 DF,  p-value: &lt;2e-16 
+## </code></pre>
+<ul>
+<li>Model 2 - baseline model plus two Google Trends</li>
+<li>\(log(y_t) = a_1log(y_{t-1}) + a_{12}log(y_{t-12}) +tss+ins+ e_t\)</li>
+</ul>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ ., data = d[-nrow(d), ])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.16679 -0.04493 -0.00213  0.04220  0.17158 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   2.0523     0.8972    2.29    0.025 *  
+## lagy.1        0.5403     0.0666    8.12  3.8e-12 ***
+## lagy.12       0.2840     0.0673    4.22  6.2e-05 ***
+## tss           0.3169     0.0637    4.98  3.5e-06 ***
+## ins           0.3644     0.0866    4.21  6.4e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+## 
+## Residual standard error: 0.0692 on 83 degrees of freedom
+##   (12 observations deleted due to missingness)
+## Multiple R-squared: 0.779,   Adjusted R-squared: 0.768 
+## F-statistic:   73 on 4 and 83 DF,  p-value: &lt;2e-16 
+## </code></pre>
+<ul>
+<li>Verify if Model 2 is improved significantly from Model 1:</li>
+</ul>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: y ~ lagy.1 + lagy.12
+## Model 2: y ~ lagy.1 + lagy.12 + tss + ins
+##   Res.Df   RSS Df Sum of Sq    F  Pr(&gt;F)    
+## 1     85 0.541                              
+## 2     83 0.398  2     0.143 14.9 2.9e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 </code></pre>
+<ul>
+<li><p>Overall fit - Out of Sample <img src="figure/slides-model4.png" /></p></li>
+<li><p>Evaluate models against normalized mean square errors (NMSE)</p></li>
+</ul>
+<pre><code>##     nmse.baseline    nmse.w.gtrends nmse.improved (%) 
+##            0.3510            0.2743           21.8441 </code></pre>
+<ul>
+<li>Pick Model 2 to next step</li>
+</ul>
+</div>
+<div class="section slide level1" id="forecast-data">
+<h1>Forecast Data</h1>
+<ul>
+<li>Nowcastic forecast on May sales with Google Trends data available on May, 2012</li>
+</ul>
+<pre><code>##            sales   tss   ins
+## 2011-12-01 71674  0.31 -0.40
+## 2012-01-01 62757  0.08 -0.27
+## 2012-02-01 71103  0.15 -0.27
+## 2012-03-01 82109  0.01 -0.18
+## 2012-04-01 74632 -0.03 -0.21
+## 2012-05-01    NA -0.04 -0.15</code></pre>
+<ul>
+<li>Forecast with prediction intervals</li>
+</ul>
+<pre><code>##              fit   lwr   upr
+## 2012-05-01 74506 64818 85641</code></pre>
+<div class="figure">
+<img src="tgoal.png" /><p class="caption"></p>
+</div>
+<ul>
+<li>Done and Pray!</li>
+</ul>
+</div>
+</body>
+</html>
